@@ -85,26 +85,24 @@
   </footer>
 
   <script>
-    function loadYouTube() {
-      const url = document.getElementById("yt-url").value;
-      const videoId = url.match(/(?:v=|youtu\.be\/)([^&]+)/);
-      if (videoId) {
-        document.getElementById("yt-player").src = `https://www.youtube-nocookie.com/embed/${videoId[1]}`;
-      } else {
-        alert("正しいYouTube URLを入力してね！");
-      }
+  function loadYouTube() {
+    const url = document.getElementById("yt-url").value;
+    const videoId = url.match(/(?:v=|youtu\.be\/)([^&]+)/);
+    if (videoId) {
+      document.getElementById("yt-player").src = `https://www.youtube-nocookie.com/embed/${videoId[1]}`;
+    } else {
+      alert("正しいYouTube URLを入力してね！");
     }
+  }
 
-    function loadProxy() {
-      const url = document.getElementById("proxy-url").value;
-      if (!url.startsWith("http")) {
-        alert("httpまたはhttpsで始まるURLを入力してね！");
-        return;
-      }
-      // 将来的にサーバー側でProxy処理する部分
-      // ここでは直接iframeで表示（CORS制限あるため一部サイトは表示されません）
-      document.getElementById("proxy-frame").src = url;
+  function loadProxy() {
+    const url = document.getElementById("proxy-url").value;
+    if (!url.startsWith("http")) {
+      alert("httpまたはhttpsで始まるURLを入力してね！");
+      return;
     }
-  </script>
+    document.getElementById("proxy-frame").src = `/proxy?url=${encodeURIComponent(url)}`;
+  }
+</script>
 </body>
 </html>
