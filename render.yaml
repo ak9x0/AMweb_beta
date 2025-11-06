@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: amewweb
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    repo: https://github.com/ak9x0/AMweb_beta.git
+    envVars:
+      - key: NODE_ENV
+        value: production
