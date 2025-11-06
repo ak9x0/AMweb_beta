@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>www.google.com</title>
+<style>
+body { font-family: sans-serif; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; margin:0; background:#f3f3f3; }
+table { border-collapse: collapse; margin-bottom:10px; }
+td { width:50px; height:50px; border:1px solid #333; text-align:center; vertical-align:middle; font-size:32px; cursor:pointer; }
+td.black { background:#000; color:#fff; }
+td.white { background:#fff; color:#000; }
+#status { margin-bottom:10px; font-size:18px; }
+button { padding:8px 15px; font-size:16px; cursor:pointer; border-radius:6px; border:none; background:#444; color:#fff; }
+button:hover { background:#666; }
+</style>
+</head>
+<body>
+<div id="status"></div>
+<table id="board"></table>
+<button onclick="restartGame()">もう一度遊ぶ</button>
+
+<script>
+const size = 8;
+let board = [];
+let turn = 'black';
+const directions = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+const statusDiv = document.getElementById('status');
+
+function initBoard(){
+  board = [];
+  for(let i=0;i<size;i++){
+    board[i]=Array(size).fill('');
+  }
+  board[3][3]='white'; board[3][4]='black';
+  board[4][3]='black'; board[4][4]='white';
+  turn='black';
+  updateStatus();
+}
+
+function renderBoard(){
+  const table = document.getElementById('board');
+  table.innerHTML='';
+  for(let i=0;i<size;i++){
+    const tr = document.createElement('tr');
+    for(let j=0;j<size;j++){
+      const td = document.createElement('td');
+      td.dataset.row=i;
+      td.dataset.col=j;
+      td.className = board[i][j];
+      td.textContent = board[i][j]==''?'': (board[i][j]=='black'?'●':'○');
+      td.addEventListener('click', ()=>{
+        if(turn==='black') placeStone(i,j);
+      });
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+}
+
+function placeStone(row,col){
+  if(board[row][col]!='') return;
+  const flips = getFlips(row,col,turn);
+  if(flips.length===0) return;
+  board[row][col]=turn;
+  flips.forEach(([r,c])=>board[r][c]=turn);
+  turn = (turn==='black')?'white':'black';
+  renderBoard();
+  updateStatus();
+  if(turn==='white') computerMove();
+}
+
+function getFlips(row,col,color){
+  const flips=[];
+  for(const [dx,dy] of directions){
+    let r=row+dx, c=col+dy;
+    const line=[];
+    while(r>=0 && r<size && c>=0 && c<size && board[r][c] && board[r][c]!==color){
+      line.push([r,c]);
+      r+=dx; c+=dy;
+    }
+    if(r>=0 && r<size && c>=0 && c<size && board[r][c]===color && line.length>0){
+      flips.push(...line);
+    }
+  }
+  return flips;
+}
+
+function hasValidMove(color){
+  for(let i=0;i<size;i++){
+    for(let j=0;j<size;j++){
+      if(board[i][j]==='' && getFlips(i,j,color).length>0) return true;
+    }
+  }
+  return false;
+}
+
+function countStones(){
+  let black=0, white=0;
+  for(let i=0;i<size;i++){
+    for(let j=0;j<size;j++){
+      if(board[i][j]==='black') black++;
+      if(board[i][j]==='white') white++;
+    }
+  }
+  return {black, white};
+}
+
+function updateStatus(){
+  const {black,white}=countStones();
+  statusDiv.textContent = `ターン: ${turn==='black'?'黒●':'白○'} | 黒: ${black} - 白: ${white}`;
+}
+
+function endGame(){
+  const {black,white}=countStones();
+  let msg='ゲーム終了！ ';
+  if(black>white) msg+='黒の勝ち！';
+  else if(white>black) msg+='白の勝ち！';
+  else msg+='引き分け！';
+  alert(msg);
+  updateStatus();
+}
+
+// AI: 白
+function computerMove(){
+  statusDiv.textContent = "AI考え中…";
+  setTimeout(()=>{
+    const moves=[];
+    for(let i=0;i<size;i++){
+      for(let j=0;j<size;j++){
+        if(board[i][j]==='' && getFlips(i,j,'white').length>0){
+          moves.push([i,j]);
+        }
+      }
+    }
+    if(moves.length===0){
+      if(!hasValidMove('black')) endGame();
+      turn='black';
+      updateStatus();
+      return;
+    }
+
+    // 簡単な評価：角>端>その他
+    let bestScore = -1;
+    let bestMoves = [];
+    moves.forEach(([r,c])=>{
+      let score = getFlips(r,c,'white').length; // ひっくり返せる数を基本スコア
+      if((r===0||r===7)&&(c===0||c===7)) score += 10; // 角ボーナス
+      else if(r===0||r===7||c===0||c===7) score += 2; // 端ボーナス
+      if(score>bestScore){
+        bestScore = score;
+        bestMoves = [[r,c]];
+      } else if(score===bestScore){
+        bestMoves.push([r,c]);
+      }
+    });
+
+    const [r,c] = bestMoves[Math.floor(Math.random()*bestMoves.length)];
+    board[r][c]='white';
+    getFlips(r,c,'white').forEach(([fr,fc])=>board[fr][fc]='white');
+    turn='black';
+    renderBoard();
+    updateStatus();
+  }, 800);
+}
+
+function restartGame(){
+  initBoard();
+  renderBoard();
+}
+
+initBoard();
+renderBoard();
+</script>
+</body>
+</html>
