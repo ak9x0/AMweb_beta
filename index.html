@@ -1,108 +1,253 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>www.google.com</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f3f3f3;
-      color: #333;
-      text-align: center;
       margin: 0;
       padding: 0;
+      background: #f3f3f3;
+      font-family: "Noto Sans JP", sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
     }
-    header {
+
+    .header {
+      width: 100%;
+      padding: 15px 0;
+      text-align: center;
       background: #e0e0e0;
-      padding: 20px 0;
-      font-size: 1.5em;
-      font-weight: bold;
-      letter-spacing: 2px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+      z-index: 2;
     }
-    .container {
-      margin-top: 40px;
-    }
-    input[type="text"] {
-      width: 60%;
-      padding: 10px;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      outline: none;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 10px;
-      background-color: #ddd;
-      cursor: pointer;
-      margin-left: 10px;
-    }
-    button:hover {
-      background-color: #ccc;
-    }
-    iframe {
-      margin-top: 30px;
-      width: 80%;
-      height: 400px;
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    footer {
-      margin-top: 50px;
-      padding: 20px;
-      font-size: 0.9em;
-      color: #666;
-    }
-    .link {
-      color: #555;
-      text-decoration: none;
+
+    .header button {
       margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #d0d0d0;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+
+    .header button:hover {
+      background: #bfbfbf;
+    }
+
+    .main {
+      flex-grow: 1;
+      width: 100%;
+      overflow-y: auto;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    iframe {
+      width: 95vw;
+      height: 90vh;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.15);
+    }
+
+    .url-box {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .url-box input {
+      width: 50%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .url-box button {
+      margin-left: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #a8a8a8;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .url-box button:hover {
+      background: #888;
+    }
+
+    .profile-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+      text-align: center;
+    }
+
+    .profile-card {
+      width: 250px;
+      background: #f9f9f9;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      transition: transform 0.2s;
+    }
+
+    .profile-card:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      object-fit: cover;
+    }
+
+    .profile-card h3 {
+      margin: 10px 0 5px;
+    }
+
+    .profile-card p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .game-list {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .game-list button {
+      margin: 5px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #d0d0d0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .game-list button:hover {
+      background: #bfbfbf;
+    }
+
   </style>
 </head>
 <body>
-  <header>あめうぇぶ β</header>
-  <div class="container">
-    <h2>YouTube no-cookie 再生</h2>
-    <input id="yt-url" type="text" placeholder="YouTubeのURLを入力">
-    <button onclick="loadYouTube()">再生</button>
-    <br>
-    <iframe id="yt-player"></iframe>
-
-    <h2 style="margin-top:50px;">Proxyビュー（テスト）</h2>
-    <input id="proxy-url" type="text" placeholder="URLを入力">
-    <button onclick="loadProxy()">表示</button>
-    <br>
-    <iframe id="proxy-frame"></iframe>
+  <div class="header">
+    <button onclick="showPage('home')">🏠 Home</button>
+    <button onclick="showPage('youtube')">🎥 YouTube</button>
+    <button onclick="showPage('proxy')">🌐 Proxy</button>
+    <button onclick="showPage('games')">🎮 Games</button>
   </div>
 
-  <footer>
-    <a class="link" href="games.html">🎮 ゲーム一覧へ</a>  
-    <p>© 2025 あめうぇぶ</p>
-  </footer>
+  <div class="main">
+    <!-- Home -->
+    <div id="page-home">
+      <h2 style="text-align:center;">あめうぇぶ β</h2>
+      <div class="profile-container">
+        <div class="profile-card">
+          <img src="https://avatars.githubusercontent.com/u/241928743?v=4" alt="a_k90">
+          <h3>a_k90（あけくれ）</h3>
+          <p>ak90とかいてあけくれと読みます。<br>
+           クソガキなあめうぇぶの管理者です。<br>
+           基本なにかあったらあけくれにどうぞ。</p>
+        </div>
+
+        <div class="profile-card">
+          <img src="https://mer0w0.github.io/mer0_o-site/assets/icon.png" alt="めろ">
+          <h3>mer0w0（めろ）</h3>
+          <p>元規制回避界隈の人です。引退済み。 <br>
+          話しかけられても反応できません。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- YouTube -->
+    <div id="page-youtube" style="display:none;">
+      <h2 style="text-align:center;">🎥 YouTube viewer 🎥</h2>
+      <div class="url-box">
+        <input type="text" id="yt-url" placeholder="YouTubeのURLを入力..." />
+        <button onclick="loadYouTube()">再生</button>
+      </div>
+      <iframe id="yt-frame" src="" allowfullscreen></iframe>
+    </div>
+
+    <!-- Proxy -->
+    <div id="page-proxy" style="display:none;">
+      <h2 style="text-align:center;">🌐 Proxy Viewer 🌐</h2>
+      <div class="url-box">
+        <input type="text" id="proxy-url" placeholder="サイトのURLを入力..." />
+        <button onclick="loadProxy()">開く</button>
+      </div>
+      <iframe id="proxy-frame" src=""></iframe>
+    </div>
+
+    <!-- Games -->
+    <div id="page-games" style="display:none;">
+      <h2 style="text-align:center;">🎮 ゲーム一覧 🎮</h2>
+      <div class="game-list">
+        <button onclick="openBlank('othello')">オセロ</button>
+        <button onclick="openBlank('2048')">2048</button>
+      </div>
+      <p style="text-align:center; color:#777;">※ 今は仮リンクです。自作ゲーム追加予定！</p>
+    </div>
+  </div>
 
   <script>
-  function loadYouTube() {
-    const url = document.getElementById("yt-url").value;
-    const videoId = url.match(/(?:v=|youtu\.be\/)([^&]+)/);
-    if (videoId) {
-      document.getElementById("yt-player").src = `https://www.youtube-nocookie.com/embed/${videoId[1]}`;
-    } else {
-      alert("正しいYouTube URLを入力してね！");
+    function showPage(page) {
+      const pages = ["home", "youtube", "proxy", "games"];
+      pages.forEach(p => {
+        document.getElementById(`page-${p}`).style.display = (p === page) ? "block" : "none";
+      });
     }
-  }
 
-  function loadProxy() {
-    const url = document.getElementById("proxy-url").value;
-    if (!url.startsWith("http")) {
-      alert("httpまたはhttpsで始まるURLを入力してね！");
-      return;
+    function loadYouTube() {
+      const url = document.getElementById("yt-url").value;
+      const videoId = url.split("v=")[1]?.split("&")[0];
+      const iframe = document.getElementById("yt-frame");
+      if (videoId) {
+        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
+      } else {
+        alert("正しいYouTube URLを入れてね！");
+      }
     }
-    document.getElementById("proxy-frame").src = `/proxy?url=${encodeURIComponent(url)}`;
-  }
-</script>
+
+    function loadProxy() {
+      const url = document.getElementById("proxy-url").value;
+      const iframe = document.getElementById("proxy-frame");
+      if (!url.startsWith("http")) {
+        alert("httpまたはhttpsで始まるURLを入力してね！");
+        return;
+      }
+      iframe.src = `/proxy?url=${encodeURIComponent(url)}`;
+    }
+
+    function openBlank(game) {
+      const win = window.open("about:blank", "_blank");
+      win.document.write(`<h1 style='text-align:center;'>${game}（開発中）</h1>`);
+      win.document.title = game + " - AmeWeb Game";
+    }
+  </script>
 </body>
 </html>
